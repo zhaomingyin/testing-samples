@@ -59,9 +59,9 @@ jobs:
     - name: Authenticate using the gcloud credentials file
       env:
         GOOGLE_APPLICATION_CREDENTIALS: ${HOME}/gcloud-credentials.json
-        ACCESS_TOKEN: ${{ steps.auth.outputs.access_token }}
       run: |
-        gcloud auth application-default login --quiet --access-token=$ACCESS_TOKEN
+        gcloud auth application-default print-access-token > token.txt
+        export CLOUDSDK_AUTH_ACCESS_TOKEN=$(cat token.txt)
         gcloud config set account ${{ secrets.GCLOUD_USER_EMAIL }}
         gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
 
