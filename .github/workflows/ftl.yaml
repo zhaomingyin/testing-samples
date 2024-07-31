@@ -55,7 +55,7 @@ jobs:
         }' > $HOME/gcloud-credentials.json
         export GOOGLE_APPLICATION_CREDENTIALS=$HOME/gcloud-credentials.json
 
-        - name: Activate gcloud credentials
+    - name: Activate gcloud credentials
       env:
         GCP_KEYFILE: ${HOME}/gcloud-credentials.json
         ACCESS_TOKEN: ${{ steps.auth.outputs.access_token }}
