@@ -60,7 +60,6 @@ jobs:
       env:
         GOOGLE_APPLICATION_CREDENTIALS: ${HOME}/gcloud-credentials.json
       run: |
-        gcloud auth application-default login --quiet --no-launch-browser
         gcloud config set account ${{ secrets.GCLOUD_USER_EMAIL }}
         gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
 
@@ -71,6 +70,8 @@ jobs:
       run: ./gradlew assembleAndroidTest
 
     - name: Run tests in Firebase Test Lab
+      env:
+        GOOGLE_APPLICATION_CREDENTIALS: ${HOME}/gcloud-credentials.json
       run: |
         gcloud firebase test android run \
           --type instrumentation \
