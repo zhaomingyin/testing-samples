@@ -57,10 +57,10 @@ jobs:
         echo "GOOGLE_APPLICATION_CREDENTIALS=${HOME}/gcloud-credentials.json" >> $GITHUB_ENV
 
     - name: Build the App APK
-      run: ./gradlew assembleDebug
+      run: unit/BasicUnitAndroidTest/./gradlew assembleDebug
 
     - name: Build the Test APK
-      run: ./gradlew assembleAndroidTest
+      run: unit/BasicUnitAndroidTest/./gradlew assembleAndroidTest
 
     - name: Run tests in Firebase Test Lab
       env:
