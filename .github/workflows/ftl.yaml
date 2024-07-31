@@ -55,11 +55,16 @@ jobs:
         }' > $HOME/gcloud-credentials.json
         export GOOGLE_APPLICATION_CREDENTIALS=$HOME/gcloud-credentials.json
 
-    - name: Authenticate using the gcloud credentials file
+        - name: Activate gcloud credentials
       env:
-        GOOGLE_APPLICATION_CREDENTIALS: $HOME/gcloud-credentials.json
+        GCP_KEYFILE: ${HOME}/gcloud-credentials.json
+        ACCESS_TOKEN: ${{ steps.auth.outputs.access_token }}
       run: |
+        gcloud auth activate-service-account --key-file="$GCP_KEYFILE"
         gcloud auth application-default login --quiet --no-launch-browser
+        export CLOUDSDK_AUTH_ACCESS_TOKEN="$ACCESS_TOKEN"
+        gcloud config set account ${{ secrets.GCLOUD_USER_EMAIL }}
+        gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
 
     - name: Build the App APK
       run: ./gradlew assembleDebug
@@ -74,4 +79,5 @@ jobs:
           --app app/build/outputs/apk/debug/app-debug.apk \
           --test app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
           --device model=MODEL,version=VERSION,locale=en_US,orientation=portrait
+
 
