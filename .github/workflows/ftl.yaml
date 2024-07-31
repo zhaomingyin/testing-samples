@@ -26,7 +26,7 @@ jobs:
       uses: android-actions/setup-android@v2
 
     - name: Set up gcloud CLI
-      uses: google-github-actions/setup-gcloud@v0.6.3
+      uses: google-github-actions/setup-gcloud@v2
       with:
         project_id: ${{ secrets.GCP_PROJECT_ID }}  # Add your Google Cloud Project ID to secrets
         service_account_email: ${{ secrets.GCP_SERVICE_ACCOUNT_EMAIL }}  # In case you're using service account email
