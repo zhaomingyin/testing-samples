@@ -25,6 +25,12 @@ jobs:
     - name: Set up Android SDK
       uses: android-actions/setup-android@v2
 
+    - name: Set up gcloud CLI
+      uses: google-github-actions/setup-gcloud@v0.6.3
+      with:
+        project_id: ${{ secrets.GCP_PROJECT_ID }}  # Add your Google Cloud Project ID to secrets
+        service_account_email: ${{ secrets.GCP_SERVICE_ACCOUNT_EMAIL }}  # In case you're using service account email
+
     - name: Authenticate with OAuth 2.0
       id: auth
       env:
@@ -35,11 +41,12 @@ jobs:
         access_token=$(curl --silent --data "client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}&refresh_token=${REFRESH_TOKEN}&grant_type=refresh_token" https://oauth2.googleapis.com/token | jq -r '.access_token')
         echo "::set-output name=access_token::${access_token}"
 
-    - name: Authenticate gcloud with Access Token
+    - name: Configure gcloud to use the access token
+      env:
+        ACCESS_TOKEN: ${{ steps.auth.outputs.access_token }}
       run: |
-        export ACCESS_TOKEN=${{ steps.auth.outputs.access_token }}
-        gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key.json
-        echo "$ACCESS_TOKEN" | gcloud auth activate-refresh-token "$YOUR_GOOGLE_ACCOUNT_EMAIL"
+        echo $ACCESS_TOKEN | gcloud auth login --brief --force
+        gcloud auth application-default login --quiet
 
     - name: Build the App APK
       run: ./gradlew assembleDebug
