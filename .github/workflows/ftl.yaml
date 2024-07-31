@@ -1,55 +1,55 @@
 name: Firebase Test Lab
 
-   on:
-     push:
-       branches:
-         - main  # Adjust branch as necessary
-     pull_request:
-       branches:
-         - main  # Adjust branch as necessary
+on:
+  push:
+    branches:
+      - main  # Adjust branch as necessary
+  pull_request:
+    branches:
+      - main  # Adjust branch as necessary
 
-   jobs:
-     firebase-test:
-       runs-on: ubuntu-latest
+jobs:
+  firebase-test:
+    runs-on: ubuntu-latest
 
-       steps:
-       - name: Checkout repository
-         uses: actions/checkout@v3
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
 
-       - name: Set up JDK 11
-         uses: actions/setup-java@v3
-         with:
-           java-version: '11'
+    - name: Set up JDK 11
+      uses: actions/setup-java@v3
+      with:
+        java-version: '11'
 
-       - name: Set up Android SDK
-         uses: android-actions/setup-android@v2
+    - name: Set up Android SDK
+      uses: android-actions/setup-android@v2
 
-       - name: Authenticate with OAuth 2.0
-         id: auth
-         env:
-           CLIENT_ID: ${{ secrets.OAUTH_CLIENT_ID }}
-           CLIENT_SECRET: ${{ secrets.OAUTH_CLIENT_SECRET }}
-           REFRESH_TOKEN: ${{ secrets.OAUTH_REFRESH_TOKEN }}
-         run: |
-           access_token=$(curl --silent --data "client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}&refresh_token=${REFRESH_TOKEN}&grant_type=refresh_token" https://oauth2.googleapis.com/token | jq -r '.access_token')
-           echo "::set-output name=access_token::${access_token}"
+    - name: Authenticate with OAuth 2.0
+      id: auth
+      env:
+        CLIENT_ID: ${{ secrets.OAUTH_CLIENT_ID }}
+        CLIENT_SECRET: ${{ secrets.OAUTH_CLIENT_SECRET }}
+        REFRESH_TOKEN: ${{ secrets.OAUTH_REFRESH_TOKEN }}
+      run: |
+        access_token=$(curl --silent --data "client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}&refresh_token=${REFRESH_TOKEN}&grant_type=refresh_token" https://oauth2.googleapis.com/token | jq -r '.access_token')
+        echo "::set-output name=access_token::${access_token}"
 
-       - name: Authenticate gcloud with Access Token
-         run: |
-           export ACCESS_TOKEN=${{ steps.auth.outputs.access_token }}
-           gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key.json
-           echo "$ACCESS_TOKEN" | gcloud auth activate-refresh-token "$YOUR_GOOGLE_ACCOUNT_EMAIL"
+    - name: Authenticate gcloud with Access Token
+      run: |
+        export ACCESS_TOKEN=${{ steps.auth.outputs.access_token }}
+        gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key.json
+        echo "$ACCESS_TOKEN" | gcloud auth activate-refresh-token "$YOUR_GOOGLE_ACCOUNT_EMAIL"
 
-       - name: Build the App APK
-         run: ./gradlew assembleDebug
+    - name: Build the App APK
+      run: ./gradlew assembleDebug
 
-       - name: Build the Test APK
-         run: ./gradlew assembleAndroidTest
+    - name: Build the Test APK
+      run: ./gradlew assembleAndroidTest
 
-       - name: Run tests in Firebase Test Lab
-         run: |
-           gcloud firebase test android run \
-             --type instrumentation \
-             --app app/build/outputs/apk/debug/app-debug.apk \
-             --test app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
-             --device model=MODEL,version=VERSION,locale=en_US,orientation=portrait
+    - name: Run tests in Firebase Test Lab
+      run: |
+        gcloud firebase test android run \
+          --type instrumentation \
+          --app app/build/outputs/apk/debug/app-debug.apk \
+          --test app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
+          --device model=MODEL,version=VERSION,locale=en_US,orientation=portrait
