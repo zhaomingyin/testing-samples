@@ -40,29 +40,28 @@ jobs:
         access_token=$(curl --silent --data "client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}&refresh_token=${REFRESH_TOKEN}&grant_type=refresh_token" https://oauth2.googleapis.com/token | jq -r '.access_token')
         echo "::set-output name=access_token::${access_token}"
 
-    # Save OAuth credentials in Google application default credentials file
     - name: Create gcloud credentials file
       env:
         CLIENT_ID: ${{ secrets.OAUTH_CLIENT_ID }}
         CLIENT_SECRET: ${{ secrets.OAUTH_CLIENT_SECRET }}
         REFRESH_TOKEN: ${{ secrets.OAUTH_REFRESH_TOKEN }}
       run: |
-        echo '{
-          "client_id": "'"$CLIENT_ID"'",
-          "client_secret": "'"$CLIENT_SECRET"'",
-          "refresh_token": "'"$REFRESH_TOKEN"'",
+        cat <<EOF > ${HOME}/gcloud-credentials.json
+        {
+          "client_id": "${CLIENT_ID}",
+          "client_secret": "${CLIENT_SECRET}",
+          "refresh_token": "${REFRESH_TOKEN}",
           "type": "authorized_user"
-        }' > $HOME/gcloud-credentials.json
-        export GOOGLE_APPLICATION_CREDENTIALS=$HOME/gcloud-credentials.json
+        }
+        EOF
+        echo "GOOGLE_APPLICATION_CREDENTIALS=${HOME}/gcloud-credentials.json" >> $GITHUB_ENV
 
-    - name: Activate gcloud credentials
+    - name: Authenticate using the gcloud credentials file
       env:
-        GCP_KEYFILE: ${HOME}/gcloud-credentials.json
+        GOOGLE_APPLICATION_CREDENTIALS: ${HOME}/gcloud-credentials.json
         ACCESS_TOKEN: ${{ steps.auth.outputs.access_token }}
       run: |
-        gcloud auth activate-service-account --key-file="$GCP_KEYFILE"
-        gcloud auth application-default login --quiet --no-launch-browser
-        export CLOUDSDK_AUTH_ACCESS_TOKEN="$ACCESS_TOKEN"
+        gcloud auth application-default login --quiet --access-token=$ACCESS_TOKEN
         gcloud config set account ${{ secrets.GCLOUD_USER_EMAIL }}
         gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
 
@@ -79,5 +78,3 @@ jobs:
           --app app/build/outputs/apk/debug/app-debug.apk \
           --test app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
           --device model=MODEL,version=VERSION,locale=en_US,orientation=portrait
-
-
