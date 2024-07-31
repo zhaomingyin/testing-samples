@@ -54,6 +54,8 @@ jobs:
           "type": "authorized_user"
         }
         EOF
+        cat ${HOME}/gcloud-credentials.json # Add this line to output the file contents for debugging
+        ls -la ${HOME}/gcloud-credentials.json # Add this line to list the file details for debugging
         echo "GOOGLE_APPLICATION_CREDENTIALS=${HOME}/gcloud-credentials.json" >> $GITHUB_ENV
 
     - name: Authenticate using the gcloud credentials file
