@@ -3,10 +3,10 @@ name: Firebase Test Lab
 on:
   push:
     branches:
-      - main  # Adjust branch as necessary
+      - main  # Adjust branch, as necessary
   pull_request:
     branches:
-      - main  # Adjust branch as necessary
+      - main  # Adjust branch, as necessary
 
 jobs:
   firebase-test:
@@ -28,8 +28,7 @@ jobs:
     - name: Set up gcloud CLI
       uses: google-github-actions/setup-gcloud@v2
       with:
-        project_id: ${{ secrets.GCP_PROJECT_ID }}  # Add your Google Cloud Project ID to secrets
-        service_account_email: ${{ secrets.GCP_SERVICE_ACCOUNT_EMAIL }}  # In case you're using service account email
+        project_id: ${{ secrets.GCP_PROJECT_ID }}
 
     - name: Authenticate with OAuth 2.0
       id: auth
@@ -73,3 +72,4 @@ jobs:
           --app app/build/outputs/apk/debug/app-debug.apk \
           --test app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
           --device model=MODEL,version=VERSION,locale=en_US,orientation=portrait
+
