@@ -68,6 +68,7 @@ jobs:
       env:
         GOOGLE_APPLICATION_CREDENTIALS: ${HOME}/gcloud-credentials.json
       run: |
+        gcloud config set account zhaomingyin@google.com
         gcloud firebase test android run \
           --type instrumentation \
           --app app/build/outputs/apk/debug/app-debug.apk \
