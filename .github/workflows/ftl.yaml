@@ -26,7 +26,7 @@ jobs:
       uses: android-actions/setup-android@v2
 
     - name: Set up gcloud CLI
-      uses: google-github-actions/setup-gcloud@v1
+      uses: google-github-actions/setup-gcloud@v2
       with:
         project_id: ${{ secrets.GCP_PROJECT_ID }}
 
@@ -55,13 +55,6 @@ jobs:
         cat ${HOME}/gcloud-credentials.json # Debug step to ensure file creation
         ls -la ${HOME}/gcloud-credentials.json # Debug step to ensure file exists
         echo "GOOGLE_APPLICATION_CREDENTIALS=${HOME}/gcloud-credentials.json" >> $GITHUB_ENV
-
-    - name: Initialize gcloud with credentials
-      env:
-        GOOGLE_APPLICATION_CREDENTIALS: ${HOME}/gcloud-credentials.json
-      run: |
-        gcloud config set account ${{ secrets.GCLOUD_USER_EMAIL }}
-        gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
 
     - name: Build the App APK
       run: ./gradlew assembleDebug
