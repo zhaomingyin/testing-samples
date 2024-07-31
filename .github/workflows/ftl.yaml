@@ -59,7 +59,7 @@ jobs:
         GOOGLE_APPLICATION_CREDENTIALS: ${HOME}/gcloud-credentials.json
       working-directory: unit/BasicUnitAndroidTest
       run: |
-        gcloud auth activate-refresh-token zhaomingyin@google.com ${{ secrets.OAUTH_REFRESH_TOKEN }}
+        gcloud auth activate-refresh-token ${{secrets.GCP_USER_NAME}} ${{ secrets.OAUTH_REFRESH_TOKEN }}
         GOOGLE_APPLICATION_CREDENTIALS=${HOME}/gcloud-credentials.json gcloud firebase test android run \
           --type instrumentation \
           --app app/build/outputs/apk/debug/app-debug.apk \
