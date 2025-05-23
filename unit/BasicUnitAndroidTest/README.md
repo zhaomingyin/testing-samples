@@ -44,3 +44,5 @@ message.
 ## See the report.
 
 A report in HTML format is generated in `app/build/outputs/reports/androidTests/connected`
+
+* add test
